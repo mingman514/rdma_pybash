@@ -84,9 +84,9 @@ def perf_test(test, option):
     option += ' &'
     print('[perf_test] {} {}'.format(testname, option))
     bash('{} {}'.format(testname, option))
-    if '>' in option:
-        res_path = option.split('> ')[1]
-        bash('cat {}'.format(res_path))
+    #if '>' in option:
+    #    res_path = option.split('> ')[1]
+    #    bash('cat {}'.format(res_path))
 
 if __name__ == '__main__':
     replace_line('vws_node1', '/freeflow/vws_freeflow/libvws/libvws.h', 57, '#define TRMQ_POLL_TH 5')
