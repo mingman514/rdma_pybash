@@ -1,0 +1,25 @@
+---------------------------------------------------------------------------------------
+Post List requested - CQ moderation will be the size of the post list
+---------------------------------------------------------------------------------------
+                    Send Post List BW Test
+ Dual-port       : OFF		Device         : mlx5_0
+ Number of qps   : 1		Transport type : IB
+ Connection type : RC		Using SRQ      : OFF
+ TX depth        : 128
+ Post List       : 64
+ CQ Moderation   : 64
+ Mtu             : 512[B]
+ Link type       : Ethernet
+ GID index       : 5
+ Max inline data : 0[B]
+ rdma_cm QPs	 : OFF
+ Data ex. method : Ethernet
+---------------------------------------------------------------------------------------
+ local address: LID 0000 QPN 0x01a9 PSN 0x3dde73
+ GID: 00:00:00:00:00:00:00:00:00:00:255:255:10:00:35:02
+ remote address: LID 0000 QPN 0x01cb PSN 0x59b216
+ GID: 00:00:00:00:00:00:00:00:00:00:255:255:10:00:31:02
+---------------------------------------------------------------------------------------
+ #bytes     #iterations    BW peak[MB/sec]    BW average[MB/sec]   MsgRate[Mpps]
+ 16         100000000        0.00               227.12 		   14.884727
+---------------------------------------------------------------------------------------

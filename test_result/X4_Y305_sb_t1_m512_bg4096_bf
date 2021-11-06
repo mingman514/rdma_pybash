@@ -1,0 +1,24 @@
+---------------------------------------------------------------------------------------
+                    Send BW Test
+ Dual-port       : OFF		Device         : mlx5_0
+ Number of qps   : 1		Transport type : IB
+ Connection type : RC		Using SRQ      : OFF
+ TX depth        : 1
+ CQ Moderation   : 1
+ Mtu             : 512[B]
+ Link type       : Ethernet
+ GID index       : 5
+ Max inline data : 0[B]
+ rdma_cm QPs	 : OFF
+ Data ex. method : Ethernet
+---------------------------------------------------------------------------------------
+ local address: LID 0000 QPN 0x01aa PSN 0x1b97dc
+ GID: 00:00:00:00:00:00:00:00:00:00:255:255:10:00:35:02
+ remote address: LID 0000 QPN 0x01cc PSN 0xe99bf5
+ GID: 00:00:00:00:00:00:00:00:00:00:255:255:10:00:31:02
+---------------------------------------------------------------------------------------
+ #bytes     #iterations    BW peak[MB/sec]    BW average[MB/sec]   MsgRate[Mpps]
+ 4096       1597818          0.00               1247.73		   0.319418
+ 4096       1599364          0.00               1248.96		   0.319733
+ 4096       1589035          0.00               1241.19		   0.317745
+ 4096       1492927          0.00               1166.18		   0.298542
