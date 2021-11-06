@@ -12,7 +12,7 @@ server_ip = ''
 #base_path = '~/'
 save_path = '~/script/test_result'
 
-TESTNAME = 'X5'
+TESTNAME = 'X4'
 HOST_NAME = bash_return('hostname').decode('utf-8').strip()
 TEST_TYPE = ''
 TX_DEPTH = 128
@@ -78,7 +78,7 @@ if __name__ == '__main__':
     Iam = int(sys.argv[1])
     server_ip = sys.argv[2]
   
-    test_list = ['sb', 'rb', 'wb']    
+    test_list = ['wb']    
     mtu_list = [512, 1024, 2048, 4096]
     tx_depth_list = [1, 2, 128]
     msg_size_list = [256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 1048576, 1073741824]
@@ -87,8 +87,8 @@ if __name__ == '__main__':
     Background Flow & Target Flow
     Watch Target Flow Until Ends
     """
-    target_t = 'tput' # 'tput' or 'lat'
-    target_list = ['tput', 'lat']
+    #target_t = 'tput' # 'tput' or 'lat'
+    target_list = ['lat']
     initialize()
     total_round = len(test_list) * len(mtu_list) * len(tx_depth_list) * len(msg_size_list) * len(target_list)
     cur_round = 0
@@ -116,11 +116,11 @@ if __name__ == '__main__':
                         opt += ' -s ' + str(MSG_SIZE)
         
                         f = name_generator(test_t) + '_bf'
-    #                    print('bf name: ', f)
     
-                        if Iam == CLIENT and target_t == 'tput':
+                        if Iam == CLIENT:
                             opt += ' {}'.format(server_ip)
-                            opt += ' > {}/{}'.format(save_path, f)
+                            if target_t == 'tput':
+                                opt += ' > {}/{}'.format(save_path, f)
     
                         print('Start Background Flow')
                         bf_proc = Process(target=run, args=(test_t, opt))
@@ -130,25 +130,27 @@ if __name__ == '__main__':
                         ### Target Flow
                         ###################
                         print('Wait for Background Flow Warming Up')
+                        tar_test_t = test_t
                         if target_t == 'tput':
                             time.sleep(10)  # set enough time to measure bw of background
                             default_opt = '-F -l 64 -s 16 -d mlx5_0 -n 100000000'
                         elif target_t == 'lat':
+                            tar_test_t = test_t[0] + 'l'
                             time.sleep(3)  # set enough time to measure bw of background
                             default_opt = '-F -l 1 -s 16 -d mlx5_0 -n 10000000 -t ' + str(TX_DEPTH)
     
                         opt = default_opt
                         opt += ' -m ' + str(MTU)
                         
-                        f = name_generator(test_t) if target_t == 'tput' else name_generator(test_t[0]+'l')
+                        
+                        f = name_generator(tar_test_t)
                         f += '_tf'
-    #                    print('tf name: ', f)
     
                         if Iam == CLIENT:
                             opt += ' {}'.format(server_ip)
                             opt += ' > {}/{}'.format(save_path, f)
     
-                        tf_proc = Process(target=run, args=(test_t, opt))
+                        tf_proc = Process(target=run, args=(tar_test_t, opt))
                         tf_proc.start()
                         
                         ###################
