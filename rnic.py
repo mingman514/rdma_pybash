@@ -139,6 +139,9 @@ if __name__ == '__main__':
                             time.sleep(3)  # set enough time to measure bw of background
                             default_opt = '-F -l 1 -s 16 -d mlx5_0 -n 10000000 -t ' + str(TX_DEPTH)
     
+                        if msg_size > 104857600: # spare more time for very large msg
+                            time.sleep(10)
+
                         opt = default_opt
                         opt += ' -m ' + str(MTU)
                         
