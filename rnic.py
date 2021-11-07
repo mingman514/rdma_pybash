@@ -12,7 +12,7 @@ server_ip = ''
 #base_path = '~/'
 save_path = '~/script/test_result'
 
-TESTNAME = 'X4'
+TESTNAME = 'X5'
 HOST_NAME = bash_return('hostname').decode('utf-8').strip()
 TEST_TYPE = ''
 TX_DEPTH = 128
@@ -78,7 +78,7 @@ if __name__ == '__main__':
     Iam = int(sys.argv[1])
     server_ip = sys.argv[2]
   
-    test_list = ['wb']    
+    test_list = ['wb', 'rb', 'sb']    
     mtu_list = [512, 1024, 2048, 4096]
     tx_depth_list = [1, 2, 128]
     msg_size_list = [256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 1048576, 1073741824]
@@ -88,7 +88,7 @@ if __name__ == '__main__':
     Watch Target Flow Until Ends
     """
     #target_t = 'tput' # 'tput' or 'lat'
-    target_list = ['lat']
+    target_list = ['tput', 'lat']
     initialize()
     total_round = len(test_list) * len(mtu_list) * len(tx_depth_list) * len(msg_size_list) * len(target_list)
     cur_round = 0
