@@ -77,7 +77,7 @@ def perf_test(test, option):
     """
     testname = test_t_translate(test)
     
-    if '10.' in option:
+    if '10.' in option or '192.' in option:
         print('Client Wait')
         time.sleep(0.5)
     
