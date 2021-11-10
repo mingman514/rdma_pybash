@@ -82,13 +82,13 @@ if __name__ == '__main__':
     test_list = ['wb', 'rb', 'sb']    
     mtu_list = [512, 1024, 2048, 4096]
     tx_depth_list = [1, 2, 4, 128]
-    msg_size_list = [1048576, 1073741824]
+    msg_size_list = [1073741824, 1048576]
 
     """
     Background Flow & Target Flow
     Watch Target Flow Until Ends
     """
-    target_list = [4096, 8192, 16384, 32768, 65536, 131072, 262144, 524288, 1048576, 1073741824]
+    target_list = [1073741824, 1048576, 4096, 8192, 16384, 32768, 65536, 131072, 262144, 524288]
     initialize()
     total_round = len(test_list) * len(mtu_list) * len(tx_depth_list) * len(msg_size_list) * len(target_list)
     cur_round = 0
@@ -145,8 +145,12 @@ if __name__ == '__main__':
                         print('Start Target Flow')
                         tf_proc = Process(target=run, args=(test_t, opt))
                         tf_proc.start()
-                        
-                        time.sleep(20)
+                      
+                        if msg_size > 104857600 or target_s > 104857600:
+                            time.sleep(40)
+                        else:
+                            time.sleep(20)
+
 
     
                         # Sync & Init
