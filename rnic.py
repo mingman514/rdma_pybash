@@ -12,7 +12,7 @@ server_ip = ''
 #base_path = '~/'
 save_path = '~/script/test_result'
 
-TESTNAME = 'X5'
+TESTNAME = 'X6ETH100'
 HOST_NAME = bash_return('hostname').decode('utf-8').strip()
 TEST_TYPE = ''
 TX_DEPTH = 128
@@ -50,8 +50,8 @@ def initialize():
 #    vu.perf_test(test, option)
 
 
-def run(test, opt):
-    vu.perf_test(test, opt)
+def run(test, opt, core=-1):
+    vu.perf_test(test, opt, core)
     #print(test_t, opt)
 
 def supervise(opt):
@@ -64,10 +64,11 @@ def supervise(opt):
 #        print('find:',opt)
         if opt not in cmds:
             FLAG = 0
-            print('Target process finished')
+            print('Target process finished: {}s'.format(elapsed))
         else:
             time.sleep(1)
-            print('Target process working... {}s'.format(elapsed))
+            if elapsed % 10 == 0:
+                print('Target process working... {}s'.format(elapsed))
             elapsed += 1
             
 
@@ -78,10 +79,12 @@ if __name__ == '__main__':
     Iam = int(sys.argv[1])
     server_ip = sys.argv[2]
   
-    test_list = ['wb', 'rb', 'sb']    
+    test_list = ['wb']    
     mtu_list = [512, 1024, 2048, 4096]
-    tx_depth_list = [1, 2, 128]
-    msg_size_list = [256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 1048576, 1073741824]
+    tx_depth_list = [128]
+    msg_size_list = [256, 512, 1024, 2048, 4096, 8192, 16384, 1048576, 1073741824]
+    #msg_size_list = [256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 262144, 524288, 1048576, 1073741824]
+    #msg_size_list = [4096, 8192, 16384, 32768, 65536, 131072, 262144, 524288, 1048576, 1073741824]
 
     """
     Background Flow & Target Flow
@@ -114,6 +117,8 @@ if __name__ == '__main__':
                         opt += ' -m ' + str(MTU)
                         opt += ' -t ' + str(TX_DEPTH)
                         opt += ' -s ' + str(MSG_SIZE)
+                        if test_t == 'sb':
+                            opt += ' -r 1024 -Q 1'
         
                         f = name_generator(test_t) + '_bf'
     
@@ -123,7 +128,7 @@ if __name__ == '__main__':
                                 opt += ' > {}/{}'.format(save_path, f)
     
                         print('Start Background Flow')
-                        bf_proc = Process(target=run, args=(test_t, opt))
+                        bf_proc = Process(target=run, args=(test_t, opt, 0))
                         bf_proc.start()
                         
                         ###################
@@ -133,14 +138,14 @@ if __name__ == '__main__':
                         tar_test_t = test_t
                         if target_t == 'tput':
                             time.sleep(10)  # set enough time to measure bw of background
-                            default_opt = '-F -l 64 -s 16 -d mlx5_0 -n 100000000'
+                            default_opt = '-F -l 64 -s 16 -d mlx5_0 -n 100000000 -Q 1'
                         elif target_t == 'lat':
                             tar_test_t = test_t[0] + 'l'
                             time.sleep(3)  # set enough time to measure bw of background
                             default_opt = '-F -l 1 -s 16 -d mlx5_0 -n 10000000 -t ' + str(TX_DEPTH)
     
                         if msg_size > 104857600: # spare more time for very large msg
-                            time.sleep(10)
+                            time.sleep(15)
 
                         opt = default_opt
                         opt += ' -m ' + str(MTU)
@@ -153,7 +158,7 @@ if __name__ == '__main__':
                             opt += ' {}'.format(server_ip)
                             opt += ' > {}/{}'.format(save_path, f)
     
-                        tf_proc = Process(target=run, args=(tar_test_t, opt))
+                        tf_proc = Process(target=run, args=(tar_test_t, opt, 1))
                         tf_proc.start()
                         
                         ###################
@@ -173,5 +178,10 @@ if __name__ == '__main__':
                         # Status
                         end = time.time()
                         cur_round += 1
-                        print('[{}]Now Round {}/{} ({}m left)'.format(str(datetime.timedelta(seconds=(end-start))).split('.')[0], cur_round, total_round, round((total_round-cur_round)*1.5), 2))
+
+                        now = end - start
+                        print('\n--------------------------------')
+                        print('[{}]Now Round {}/{} ({}m left)'.format(str(datetime.timedelta(seconds=now)).split('.')[0], cur_round, total_round, round((now/cur_round)*(total_round-cur_round)/60, 0)))
+
+                        print('--------------------------------')
 
