@@ -30,7 +30,7 @@ def build_using_sh(cont, filepath):
 def mkdir(path):
     bash('mkdir {}'.format(path))
 
-def test_t_translate(test):
+def test_t_translate(test, core=-1):
     testname = ''
     if test == 'sb':
         testname = 'ib_send_bw'
@@ -47,6 +47,8 @@ def test_t_translate(test):
     else:
         print('Invalid testing format. (Use one of sb/sl/wb/wl/rb/rl)')
         exit(-1)
+    if core >= 0:
+        testname = 'sudo taskset -c {} {}'.format(core, testname)
     return testname
 
 def kill_native_process():
@@ -70,12 +72,12 @@ def async_wait(job):
 ############################################
 # Perf test
 ############################################
-def perf_test(test, option):
+def perf_test(test, option, core=-1):
     """
     ex. ib_send_bw -S 3 -Q 1 -a
         -> perf_test('sb', '-S 3 -Q 1 -a')
     """
-    testname = test_t_translate(test)
+    testname = test_t_translate(test, core)
     
     if '10.' in option or '192.' in option:
         print('Client Wait')
